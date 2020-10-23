@@ -16,11 +16,11 @@ def threshold(S, rank):
 def flag(S, M, rank, n_flag):
     L = threshold(S, rank)
     diff = np.abs(L - S)
-    flat_idxs = np.argsort(diff, axis=None)
-    unraveled = np.unravel_index(flat_idxs, S.shape)
+    flat_idxs = np.argsort(diff, axis=None) # flattened index, increasing
+    unraveled = np.unravel_index(flat_idxs, S.shape) # unflattens
     idxs = [(unraveled[0][i], unraveled[1][i]) for i in range(flat_idxs.size)]
     flags = []
-    for idx in reversed(idxs):
+    for idx in reversed(idxs): # decreasing order
         if M[idx] == 0 and S[idx] == 1:
             flags.append(idx)
             n_flag -= 1
