@@ -12,11 +12,13 @@ def run(rank, nflag):
         for p in range(S.shape[1]):
             if M[r, p] == 1:
                 continue
+            
             '''
             # uncomment for weaker manipulation case
             if S[r, p] == 1:
                 continue
             '''
+            
 
             Sm = np.copy(S)
             Sm[r, :] = 0 # comment for weaker manipulation case
@@ -44,9 +46,11 @@ for rank in ranks:
     ps.append(p)
     print(rank, p)
 
+np.savez('bidexp_'+str(nflag) +'.npz', ranks=ranks, ps=ps)
+
 # plotting
-plt.plot(ranks, ps, '-o')
-plt.xlabel('rank threshold')
-plt.ylabel('detection probability')
-plt.ylim([0, 1])
-plt.savefig('bidexp_'+str(nflag) +'.png')
+#plt.plot(ranks, ps, '-o')
+#plt.xlabel('rank threshold')
+#plt.ylabel('detection probability')
+#plt.ylim([0, 1])
+#plt.savefig('bidexp_'+str(nflag) +'.png')
