@@ -11,21 +11,6 @@ no_similarity = 0
 
 ###########################################################################
 
-dataset_name = sys.argv[1] #name of the npz file
-preflib_dataset_index = dataset_name[-5] #names of the toi files include an index
-dataset = open(dataset_name, "r")
-output_file = f"preflib{preflib_dataset_index}"
-
-lines = dataset.readlines()
-d = int(lines[0]) #num_papers
-n = int(((lines[d + 1]).split(","))[0]) #first entry of the (d+1)th line
-#n is num_reviewers
-
-similarity_matrix = [([0] * d) for i in range(n)] #empty similarity matrix
-mask_matrix = [([1] * d) for i in range(n)] #start by assuming everything conflicts
-#conflicts are not within any of the {} {} {}, so we can set non-conflicts to 0 as we iterate through the sets.
-
-
 def edit_S_M(L, val, reviewer):
 # edits the similarity and mask (conflict) matrix
 # entries in L correspond to paper indices
@@ -42,18 +27,33 @@ def edit_S_M(L, val, reviewer):
             mask_matrix[reviewer][paper] = 0 #edit mask matrix to remove non-conflicts
 
 
-for i in range(n): #looping over reviewers
-    line = (lines[d + 2 + i]).split("{")
+for dataset_name in ['MD-00002-00000001.toi', 'MD-00002-00000002.toi', 'MD-00002-00000003.toi']:
+    preflib_dataset_index = dataset_name[-5] #names of the toi files include an index
+    dataset = open(dataset_name, "r")
+    output_file = f"preflib{preflib_dataset_index}"
     
-    yes = line[1].split(",") #the first {} corresponds to "yes" bids
-    edit_S_M(yes, yes_similarity, i)
+    lines = dataset.readlines()
+    d = int(lines[0]) #num_papers
+    n = int(((lines[d + 1]).split(","))[0]) #first entry of the (d+1)th line
+    #n is num_reviewers
     
-    maybe = line[2].split(",") #the second {} corresponds to "maybe" bids
-    edit_S_M(maybe, maybe_similarity, i)
+    similarity_matrix = [([0] * d) for i in range(n)] #empty similarity matrix
+    mask_matrix = [([1] * d) for i in range(n)] #start by assuming everything conflicts
+    #conflicts are not within any of the {} {} {}, so we can set non-conflicts to 0 as we iterate through the sets.
     
-    no = line[3].split(",") #the third {} corresponds to "no" bids
-    edit_S_M(no, no_similarity, i)
-
-np.savez(output_file, similarity_matrix = similarity_matrix, mask_matrix = mask_matrix) #saves as npz file
-
-dataset.close()
+    
+    for i in range(n): #looping over reviewers
+        line = (lines[d + 2 + i]).split("{")
+        
+        yes = line[1].split(",") #the first {} corresponds to "yes" bids
+        edit_S_M(yes, yes_similarity, i)
+        
+        maybe = line[2].split(",") #the second {} corresponds to "maybe" bids
+        edit_S_M(maybe, maybe_similarity, i)
+        
+        no = line[3].split(",") #the third {} corresponds to "no" bids
+        edit_S_M(no, no_similarity, i)
+    
+    np.savez(output_file, similarity_matrix = similarity_matrix, mask_matrix = mask_matrix) #saves as npz file
+    
+    dataset.close()
