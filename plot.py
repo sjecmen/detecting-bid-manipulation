@@ -3,18 +3,25 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sys
 
-d3 = np.load('bidexp_3.npz')
-d83 = np.load('bidexp_83_weak.npz')
+fname = 'preflib1'
+
+d5 = np.load('bidexp2_'+fname+'_weakFalse_p5.0.npz')
+d1 = np.load('bidexp2_'+fname+'_weakFalse_p1.0.npz')
+d5w = np.load('bidexp2_'+fname+'_weakTrue_p5.0.npz')
+d1w = np.load('bidexp2_'+fname+'_weakTrue_p1.0.npz')
 
 
 plt.rcParams.update({'font.size': 15.5})
-plt.plot(d3['ranks'], d3['ps'], '-o', label="3 flags", ms=7, linewidth=2)
-plt.plot(d83['ranks'], d83['ps'], '--^', label="83 flags, weak manipulation", ms=7, linewidth=2)
-plt.legend(loc='lower left')
+plt.errorbar(d5['ranks'], d5['ps'], yerr=d5['ses'], fmt='-o', label="5% positive flags, strong manipulation", ms=7, linewidth=2)
+plt.errorbar(d1['ranks'], d1['ps'], yerr=d1['ses'], fmt='-^', label="1% positive flags, strong manipulation", ms=7, linewidth=2)
+plt.errorbar(d5w['ranks'], d5w['ps'], yerr=d5w['ses'], fmt='-x', label="5% positive flags, weak manipulation", ms=7, linewidth=2)
+plt.errorbar(d1w['ranks'], d1w['ps'], yerr=d1w['ses'], fmt='-*', label="1% positive flags, weak manipulation", ms=7, linewidth=2)
+plt.legend(prop={'size':12})
+plt.title(fname)
 plt.xlabel('Rank Threshold')
 plt.ylabel('Detection Probability')
 plt.tight_layout()
-plt.ylim([0, 1])
-plt.xticks([1, 6, 11, 16, 21, 26, 31])
-plt.savefig('bidexp.png')
+plt.ylim([-.05, 1.05])
+plt.xticks()
+plt.savefig('bidexp2_'+fname+'.png')
 plt.show()
